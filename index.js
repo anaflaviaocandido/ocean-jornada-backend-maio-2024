@@ -26,6 +26,7 @@ app.get('/item/:id', function (req, res) {
     //Acessamos o item na lista usando: ID - 1
     const item = itens[id - 1]
 
+    //Enviamos o item como resposta
     res.send(item)
 })
 
