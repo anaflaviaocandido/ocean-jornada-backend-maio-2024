@@ -62,17 +62,20 @@ async function main() {
         const body = req.body
 
         //Acessar o item no corpo da requisição
-        const novoitem = body.nome
+        const novoItem = body.nome
 
         //Adicionar novo item na lista
-        itens.push(novoitem)
+        //itens.push(novoitem)
+
+        //Adicionar o novo item na collection
+        collection.insertOne({ nome: novoItem})
 
         //Enviar uma mensagem de sucesso
-        res.send('Item adicionado com sucesso: ' + novoitem)
+        res.send('Item adicionado com sucesso: ' + novoItem)
     })
 
     // Endpoint de Update [PUT] /item/:id
-    app.put('/item/:id', function (req, res) {
+    app.put('/item/:id', async function (req, res) {
         // Acessar o ID do parâmetro de rota
         const id = req.params.id
 
@@ -81,20 +84,22 @@ async function main() {
         const body = req.body
         const atualizarItem = body.nome
 
-        // Atualizar na lista o item recebido
-        itens[id - 1] = atualizarItem
+        await collection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: {nome: atualizarItem } }
+        )
 
         // Enviamos uma mensagem de sucesso
         res.send('Item atualizado com sucesso: ' + id + ', ' + atualizarItem)
     })
 
     // Endpoint de Delete [DELETE] /item/:id
-    app.delete('/item/:id', function (req, res) {
+    app.delete('/item/:id', async function (req, res) {
         // Acessar o parâmetro de rota ID
         const id = req.params.id
 
         // Executa a operação de exclusão desse item pelo índice
-        delete itens[id - 1]
+        await collection.deleteOne({ _id: new ObjectId(id) })
 
         // Enviamos uma mensagem de sucesso
         res.send('Item removido com sucesso: ' + id)
